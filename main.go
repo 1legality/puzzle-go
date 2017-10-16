@@ -107,8 +107,9 @@ func findNextMove(line int, column int) (bool, string) {
 }
 
 func isMoveBanned(newMove move) bool {
-	for _, v := range bannedMoves {
-		if v == newMove {
+	// iterate in reverse to save time
+	for i := len(bannedMoves)-1; i >= 0; i-- {
+		if bannedMoves[i] == newMove {
 			return true
 		}
 	}
@@ -124,12 +125,8 @@ func resolve() bool {
 				foundNextMove, direction := findNextMove(line, column)
 				if foundNextMove {
 					iteration++
-					//fmt.Println(iteration)
-					// fmt.Println("moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard)
-					// fmt.Printf("\rOn %d/10", "moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard
 
 					fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d", column, line, direction, pegsOnBoard, len(bannedMoves), len(moves))
-					//printPuzzle()
 
 					pegsOnBoard--
 					if pegsOnBoard == 1 {
