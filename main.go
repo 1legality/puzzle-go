@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 var puzzleState [7][7]int
 var moves []move
 var bannedMoves []move
+var pegsOnBoard = 0
 
 type move struct {
 	line        int
@@ -31,6 +33,11 @@ func file2lines(filePath string) []string {
 		lines = append(lines, scanner.Text())
 
 		for n, r := range scanner.Text() {
+
+			if int(r - '0') == 1 {
+				pegsOnBoard++
+			}
+
 			puzzleState[line][n] = int(r - '0') //convert rune to int
 		}
 		line++
@@ -118,10 +125,11 @@ func resolve() bool {
 				if foundNextMove {
 					iteration++
 					//fmt.Println(iteration)
-					fmt.Println("moving ", line+1, ":", column+1, ":", direction)
+					fmt.Println("moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard)
 					//printPuzzle()
 
-					if verifyIfWin() {
+					pegsOnBoard--
+					if pegsOnBoard == 1 {
 						return true
 					}
 
@@ -133,6 +141,8 @@ func resolve() bool {
 				bannedMoves = append(bannedMoves, moves[len(moves)-1])
 				puzzleState = moves[len(moves)-1].puzzleState
 				moves = moves[:len(moves)-1]
+
+				pegsOnBoard++
 
 				return resolve()
 			}
@@ -169,14 +179,15 @@ func verifyIfWin() bool {
 }
 
 func main() {
-	file2lines("./test.puzzle")
+	file2lines("./english.test.puzzle")
+
+	startTime := time.Now()
 
 	if resolve() {
 		fmt.Println("Won!")
 	} else {
 		fmt.Println("Found no solution")
 	}
-	printPuzzle()
-
-	// printPuzzle(puzzleState)
+	// printPuzzle()
+	fmt.Println("Done in ", time.Now().Sub(startTime))
 }
