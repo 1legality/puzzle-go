@@ -11,6 +11,7 @@ var puzzleState [7][7]int
 var moves []move
 var bannedMoves []move
 var pegsOnBoard = 0
+var startTime = time.Now()
 
 type move struct {
 	line        int
@@ -126,7 +127,8 @@ func resolve() bool {
 				if foundNextMove {
 					iteration++
 
-					fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d", column, line, direction, pegsOnBoard, len(bannedMoves), len(moves))
+					fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d, timer : %s",
+						column, line, direction, pegsOnBoard, len(bannedMoves), len(moves), time.Now().Sub(startTime))
 
 					pegsOnBoard--
 					if pegsOnBoard == 1 {
