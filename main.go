@@ -125,7 +125,10 @@ func resolve() bool {
 				if foundNextMove {
 					iteration++
 					//fmt.Println(iteration)
-					fmt.Println("moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard)
+					// fmt.Println("moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard)
+					// fmt.Printf("\rOn %d/10", "moving ", line+1, ":", column+1, ":", direction, ", pegs left : ", pegsOnBoard
+
+					fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d", column, line, direction, pegsOnBoard, len(bannedMoves), len(moves))
 					//printPuzzle()
 
 					pegsOnBoard--
@@ -152,7 +155,6 @@ func resolve() bool {
 }
 
 func printPuzzle() {
-	fmt.Println("Printing puzzle")
 	for line := 0; line < 7; line++ {
 		for column := 0; column < 7; column++ {
 			fmt.Print(puzzleState[line][column], " ")
@@ -161,33 +163,28 @@ func printPuzzle() {
 	}
 }
 
-func verifyIfWin() bool {
-	counter := 0
-	for line := 0; line < 7; line++ {
-		for column := 0; column < 7; column++ {
-			if puzzleState[line][column] == 1 {
-				counter++
-			}
-		}
-	}
-
-	if counter == 1 {
-		return true
-	} else {
-		return false
-	}
-}
-
 func main() {
 	file2lines("./english.test.puzzle")
 
 	startTime := time.Now()
+	fmt.Println("Puzzle initial state")
+	printPuzzle()
 
 	if resolve() {
-		fmt.Println("Won!")
+		fmt.Println("\nWon!")
+
+
 	} else {
-		fmt.Println("Found no solution")
+		fmt.Println("\nFound no solution")
 	}
-	// printPuzzle()
+
+	fmt.Println("Stastistics")
+	fmt.Println("_____________________")
+	fmt.Println(iteration, "iterations")
+	fmt.Println("Banned", len(bannedMoves), "moves")
+	fmt.Println("Solution uses", len(moves), "moves")
 	fmt.Println("Done in ", time.Now().Sub(startTime))
+
+	fmt.Println("Puzzle final state")
+	printPuzzle()
 }
