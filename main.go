@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"github.com/cnf/structhash"
 )
 
 var puzzleState [7][7]int
 var moves []move
-var bannedMoves []move
+// var bannedMoves []move
+var bannedMoves = make(map[string]move)
+// var bannedMoves(map[string]move)
 var pegsOnBoard = 0
 var startTime = time.Now()
 
@@ -106,7 +109,9 @@ func findNextMove() (bool, move) {
 }
 
 func undo() {
-	bannedMoves = append(bannedMoves, moves[len(moves)-1])
+	// bannedMoves = append(bannedMoves, moves[len(moves)-1])
+
+	bannedMoves[string(structhash.Md5(moves[len(moves)-1], 1))] = moves[len(moves) - 1]
 	puzzleState = moves[len(moves)-1].puzzleState
 	moves = moves[:len(moves)-1]
 
@@ -114,13 +119,21 @@ func undo() {
 }
 
 func isMoveBanned(newMove move) bool {
-	// iterate in reverse to save time
+
+	isMoveExisting := bannedMoves[string(structhash.Md5(newMove, 1))]
+
+	if (isMoveExisting == move{}) {
+		return false
+	}
+	return true
+
+	/*// iterate in reverse to save time
 	for i := len(bannedMoves)-1; i >= 0; i-- {
 		if bannedMoves[i] == newMove {
 			return true
 		}
 	}
-	return false
+	return false*/
 }
 
 var iteration = 0
@@ -130,6 +143,9 @@ func resolve() bool {
 	if foundNextMove {
 		iteration++
 		moves = append(moves, newMove)
+
+		// fmt.Println(structhash.Md5(newMove, 1))
+
 		fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d, timer : %s",
 			newMove.column, newMove.line, newMove.direction, pegsOnBoard, len(bannedMoves), len(moves), time.Now().Sub(startTime))
 
@@ -156,7 +172,7 @@ func printPuzzle() {
 }
 
 func main() {
-	file2lines("./resources/english.test.puzzle")
+	file2lines("./resources/european.test.puzzle")
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
