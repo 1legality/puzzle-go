@@ -156,7 +156,7 @@ func printPuzzle() {
 }
 
 func main() {
-	file2lines("./english.test.puzzle")
+	file2lines("./resources/english.test.puzzle")
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
