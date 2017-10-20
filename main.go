@@ -230,7 +230,7 @@ func main() {
 	fmt.Println("_____________________")
 	fmt.Println("Stastistics")
 	fmt.Println(iteration, "iterations")
-	fmt.Println("Banned", len(bannedPuzzleState), "moves")
+	fmt.Println("Banned", len(bannedPuzzleState), "boards")
 	fmt.Println("Solution uses", len(moves), "moves")
 	fmt.Println("Done in ", time.Now().Sub(startTime))
 
