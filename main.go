@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 	"github.com/cnf/structhash"
+	"runtime/debug"
 )
 
 var puzzleState [7][7]int
@@ -198,6 +199,7 @@ func printPuzzle(puzzle [7][7]int) {
 
 func main() {
 
+	debug.SetMaxStack(14000000000)
 	arg := os.Args[1]
 
 	fmt.Println("Opening file", arg)
