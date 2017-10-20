@@ -10,7 +10,7 @@ import (
 
 var puzzleState [7][7]int
 var moves []move
-var bannedPuzzleState = make(map[string] [7][7]int)
+var bannedPuzzleState = make(map[string] byte)
 var pegsOnBoard = 0
 var startTime = time.Now()
 
@@ -144,7 +144,7 @@ func undo() bool {
 		return false
 	}
 
-	bannedPuzzleState[string(structhash.Md5(puzzleState, 1))] = puzzleState
+	bannedPuzzleState[string(structhash.Md5(puzzleState, 1))] = 1
 
 	puzzleState = moves[len(moves)-1].puzzleState
 	moves = moves[:len(moves)-1]
