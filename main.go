@@ -51,8 +51,6 @@ func file2lines(filePath string) []string {
 	return lines
 }
 
-// TODO : findNextMove, undoLastMove, RecursiveFunction "resolve" which returns true or false
-
 func findNextMove() (bool, move) {
 	// Use Konami order up down left right
 	var initialPuzzleState = puzzleState
@@ -199,7 +197,12 @@ func printPuzzle() {
 }
 
 func main() {
-	file2lines("./resources/english.puzzle")
+
+	arg := os.Args[1]
+
+	fmt.Println("Opening file", arg)
+
+	file2lines(arg)
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
