@@ -140,13 +140,20 @@ func findNextMove() (bool, move) {
 	return false, move{}
 }
 
-func undo() {
+func undo() bool {
+
+	if len(moves) == 0 {
+		return false
+	}
+
 	bannedPuzzleState[string(structhash.Md5(puzzleState, 1))] = puzzleState
 
 	puzzleState = moves[len(moves)-1].puzzleState
 	moves = moves[:len(moves)-1]
 
 	pegsOnBoard++
+
+	return true
 }
 
 func isBannedBoard(puzzleStatePrototype [7][7]int) bool {
@@ -173,7 +180,10 @@ func resolve() bool {
 
 		return resolve()
 	} else {
-		undo()
+		if !undo() {
+			return false
+		}
+
 		return resolve()
 	}
 	return false
