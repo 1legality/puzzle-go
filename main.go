@@ -187,10 +187,10 @@ func resolve() bool {
 	return false
 }
 
-func printPuzzle() {
+func printPuzzle(puzzle [7][7]int) {
 	for line := 0; line < 7; line++ {
 		for column := 0; column < 7; column++ {
-			fmt.Print(puzzleState[line][column], " ")
+			fmt.Print(puzzle[line][column], " ")
 		}
 		fmt.Println()
 	}
@@ -206,22 +206,34 @@ func main() {
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
-	printPuzzle()
+	printPuzzle(puzzleState)
 
+	win := false
 	if resolve() {
-		fmt.Println("\n_____________________")
+		win = true
+	}
+
+
+	fmt.Println("\n_____________________")
+	fmt.Println("Moves")
+	for n, r := range moves {
+		fmt.Printf("\n%d. %d:%d:%s\n", n + 1, r.column +1 , r.line + 1, r.direction)
+		//printPuzzle(r.puzzleState)
+	}
+	fmt.Println("_____________________")
+
+	if win {
 		fmt.Println("\nComputer wins! :)")
 	} else {
-		fmt.Println("\n_____________________")
 		fmt.Println("\nHumans win! :(")
 	}
-	fmt.Println("Stastistics")
 	fmt.Println("_____________________")
+	fmt.Println("Stastistics")
 	fmt.Println(iteration, "iterations")
 	fmt.Println("Banned", len(bannedPuzzleState), "moves")
 	fmt.Println("Solution uses", len(moves), "moves")
 	fmt.Println("Done in ", time.Now().Sub(startTime))
 
 	fmt.Println("Puzzle final state")
-	printPuzzle()
+	printPuzzle(puzzleState)
 }
