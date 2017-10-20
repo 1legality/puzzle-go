@@ -10,7 +10,7 @@ import (
 
 var puzzleState [7][7]int
 var moves []move
-var bannedMoves = make(map[string]move)
+var bannedPuzzleState = make(map[string] [7][7]int)
 var pegsOnBoard = 0
 var startTime = time.Now()
 
@@ -61,44 +61,78 @@ func findNextMove() (bool, move) {
 			if puzzleState[line][column] == 1 {
 				if line >= 2 &&
 					puzzleState[line-1][column] == 1 &&
-					puzzleState[line-2][column] == 2 &&
-					!isMoveBanned(move{line, column, "↑", puzzleState}) {
-					// up
-					puzzleState[line][column] = 2
-					puzzleState[line-1][column] = 2
-					puzzleState[line-2][column] = 1
+					puzzleState[line-2][column] == 2 {
 
-					return true, move{line, column, "↑", initialPuzzleState}
-				} else if line <= 4 &&
+					puzzleStatePrototype := puzzleState
+					puzzleStatePrototype[line][column] = 2
+					puzzleStatePrototype[line-1][column] = 2
+					puzzleStatePrototype[line-2][column] = 1
+
+					if !isBannedBoard(puzzleStatePrototype) {
+						// up
+						puzzleState[line][column] = 2
+						puzzleState[line-1][column] = 2
+						puzzleState[line-2][column] = 1
+
+						return true, move{line, column, "↑", initialPuzzleState}
+					}
+				}
+
+				if line <= 4 &&
 					puzzleState[line+1][column] == 1 &&
-					puzzleState[line+2][column] == 2 &&
-					!isMoveBanned(move{line, column, "↓", puzzleState}) {
-					// down
-					puzzleState[line][column] = 2
-					puzzleState[line+1][column] = 2
-					puzzleState[line+2][column] = 1
+					puzzleState[line+2][column] == 2 {
 
-					return true, move{line, column, "↓", initialPuzzleState}
-				} else if column >= 2 &&
+					puzzleStatePrototype := puzzleState
+					puzzleStatePrototype[line][column] = 2
+					puzzleStatePrototype[line+1][column] = 2
+					puzzleStatePrototype[line+2][column] = 1
+
+					if !isBannedBoard(puzzleStatePrototype) {
+						// down
+						puzzleState[line][column] = 2
+						puzzleState[line+1][column] = 2
+						puzzleState[line+2][column] = 1
+
+						return true, move{line, column, "↓", initialPuzzleState}
+					}
+				}
+
+				if column >= 2 &&
 					puzzleState[line][column-1] == 1 &&
-					puzzleState[line][column-2] == 2 &&
-					!isMoveBanned(move{line, column, "←", puzzleState}) {
-					// left
-					puzzleState[line][column] = 2
-					puzzleState[line][column-1] = 2
-					puzzleState[line][column-2] = 1
+					puzzleState[line][column-2] == 2 {
 
-					return true, move{line, column, "←", initialPuzzleState}
-				} else if column <= 4 &&
+					puzzleStatePrototype := puzzleState
+					puzzleStatePrototype[line][column] = 2
+					puzzleStatePrototype[line][column-1] = 2
+					puzzleStatePrototype[line][column-2] = 1
+
+					if !isBannedBoard(puzzleStatePrototype) {
+						// left
+						puzzleState[line][column] = 2
+						puzzleState[line][column-1] = 2
+						puzzleState[line][column-2] = 1
+
+						return true, move{line, column, "←", initialPuzzleState}
+					}
+				}
+
+				if column <= 4 &&
 					puzzleState[line][column+1] == 1 &&
-					puzzleState[line][column+2] == 2 &&
-					!isMoveBanned(move{line, column, "→", puzzleState}) {
-					// right
-					puzzleState[line][column] = 2
-					puzzleState[line][column+1] = 2
-					puzzleState[line][column+2] = 1
+					puzzleState[line][column+2] == 2 {
 
-					return true, move{line, column, "→", initialPuzzleState}
+					puzzleStatePrototype := puzzleState
+					puzzleStatePrototype[line][column] = 2
+					puzzleStatePrototype[line][column+1] = 2
+					puzzleStatePrototype[line][column+2] = 1
+
+					if !isBannedBoard(puzzleStatePrototype) {
+						// right
+						puzzleState[line][column] = 2
+						puzzleState[line][column+1] = 2
+						puzzleState[line][column+2] = 1
+
+						return true, move{line, column, "→", initialPuzzleState}
+					}
 				}
 			}
 		}
@@ -107,20 +141,19 @@ func findNextMove() (bool, move) {
 }
 
 func undo() {
-	bannedMoves[string(structhash.Md5(moves[len(moves)-1], 1))] = moves[len(moves) - 1]
+	bannedPuzzleState[string(structhash.Md5(puzzleState, 1))] = puzzleState
+
 	puzzleState = moves[len(moves)-1].puzzleState
 	moves = moves[:len(moves)-1]
 
 	pegsOnBoard++
 }
 
-func isMoveBanned(newMove move) bool {
-	isMoveExisting := bannedMoves[string(structhash.Md5(newMove, 1))]
-
-	if (isMoveExisting == move{}) {
-		return false
+func isBannedBoard(puzzleStatePrototype [7][7]int) bool {
+	if _, ok := bannedPuzzleState[string(structhash.Md5(puzzleStatePrototype, 1))]; ok {
+		return true
 	}
-	return true
+	return false
 }
 
 var iteration = 0
@@ -130,9 +163,8 @@ func resolve() bool {
 	if foundNextMove {
 		iteration++
 		moves = append(moves, newMove)
-
 		fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d, timer : %s",
-			newMove.column, newMove.line, newMove.direction, pegsOnBoard, len(bannedMoves), len(moves), time.Now().Sub(startTime))
+			newMove.column, newMove.line, newMove.direction, pegsOnBoard, len(bannedPuzzleState), len(moves), time.Now().Sub(startTime))
 
 		pegsOnBoard--
 		if pegsOnBoard == 1 {
@@ -157,7 +189,7 @@ func printPuzzle() {
 }
 
 func main() {
-	file2lines("./resources/european.test.puzzle")
+	file2lines("./resources/36.puzzle")
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
@@ -165,8 +197,6 @@ func main() {
 
 	if resolve() {
 		fmt.Println("\nWon!")
-
-
 	} else {
 		fmt.Println("\nFound no solution")
 	}
@@ -174,7 +204,7 @@ func main() {
 	fmt.Println("Stastistics")
 	fmt.Println("_____________________")
 	fmt.Println(iteration, "iterations")
-	fmt.Println("Banned", len(bannedMoves), "moves")
+	fmt.Println("Banned", len(bannedPuzzleState), "moves")
 	fmt.Println("Solution uses", len(moves), "moves")
 	fmt.Println("Done in ", time.Now().Sub(startTime))
 
