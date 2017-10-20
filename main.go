@@ -199,18 +199,19 @@ func printPuzzle() {
 }
 
 func main() {
-	file2lines("./resources/36.puzzle")
+	file2lines("./resources/english.puzzle")
 
 	startTime := time.Now()
 	fmt.Println("Puzzle initial state")
 	printPuzzle()
 
 	if resolve() {
-		fmt.Println("\nWon!")
+		fmt.Println("\n_____________________")
+		fmt.Println("\nComputer wins! :)")
 	} else {
-		fmt.Println("\nFound no solution")
+		fmt.Println("\n_____________________")
+		fmt.Println("\nHumans win! :(")
 	}
-
 	fmt.Println("Stastistics")
 	fmt.Println("_____________________")
 	fmt.Println(iteration, "iterations")
