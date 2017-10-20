@@ -168,11 +168,12 @@ func resolve() bool {
 	foundNextMove, newMove := findNextMove()
 	if foundNextMove {
 		iteration++
+		pegsOnBoard--
 		moves = append(moves, newMove)
+
 		fmt.Printf("\rmoving %d:%d:%s, pegs left : %02d, banned moves : %06d, moves : %06d, timer : %s",
 			newMove.column, newMove.line, newMove.direction, pegsOnBoard, len(bannedPuzzleState), len(moves), time.Now().Sub(startTime))
 
-		pegsOnBoard--
 		if pegsOnBoard == 1 {
 			return true
 		}
